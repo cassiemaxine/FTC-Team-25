@@ -66,7 +66,7 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
 
     private DcMotor ringLift; //hd hex 40
     private Servo ringDispenser; //continuous servo
-    private boolean ringDispenserExtended = false;
+    private boolean ringDispenserOpen = false;
 
     private static final int TICKS_PER_INCH = 79;
     private final double OPEN_WOBBLE_SERVO = (float) 244.0 / 256.0;
@@ -96,8 +96,8 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
         wobbleGrab = hardwareMap.servo.get("wobbleGrabServo");
 
         //mapping the launch mech and intake mech
-        launchMechLeft = hardwareMap.get(DcMotor.class, "intakeMechLeft");
-        launchMechRight = hardwareMap.get(DcMotor.class, "intakeMechRight");
+        launchMechLeft = hardwareMap.get(DcMotor.class, "launchMechLeft");
+        launchMechRight = hardwareMap.get(DcMotor.class, "launchMechRight");
 
         //mapping wobble lift motor
         wobbleLift = hardwareMap.get(DcMotor.class, "wobbleLift");
@@ -149,30 +149,30 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
                     //launching system
                     case BUTTON_X_DOWN:
                         //shooting Servo open or closed depending on boolean toggle
-                        if (ringDispenserExtended) {
-                            ringDispenser.setPosition(RETURN_RING_DISPENSER);
-                            ringDispenserExtended = false;
-                        } else {
+                        if (ringDispenserOpen) {
                             ringDispenser.setPosition(DISPENSE_RING);
-                            ringDispenserExtended = true;
+                            ringDispenserOpen = false;
+                        } else {
+                            ringDispenser.setPosition(RETURN_RING_DISPENSER);
+                            ringDispenserOpen = true;
                         }
                         break;
                     case BUTTON_Y_DOWN:
                         //activate launching mech
                         launchMechLeft.setPower(0.5);
                         launchMechRight.setPower(-0.15);
+                        break;
                     case BUTTON_Y_UP:
-                        // stop the launching mech
                         launchMechLeft.setPower(0);
                         launchMechRight.setPower(0);
                         break;
                     case LEFT_TRIGGER_DOWN:
                         //lift ring elevator UP
-                        ringLift.setPower(1);
+                        ringLift.setPower(0.1);
                         break;
                     case RIGHT_TRIGGER_DOWN:
                         //ring elevator DOWN
-                        ringLift.setPower(-1); //might have to switch 190 and 194 during testing
+                        ringLift.setPower(-0.1); //might have to switch 171 and 175 during testing
                         break;
                     case LEFT_TRIGGER_UP:
                     case RIGHT_TRIGGER_UP:
