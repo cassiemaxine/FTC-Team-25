@@ -24,7 +24,7 @@ import team25core.RingImageInfo;
 
 @Autonomous(name = "Scrimmage4Cassie", group = "Team 25")
 // @Disabled
-public class UltimateGoalAutoCassie extends Robot {
+public class UltimateGoalAutoScrim4 extends Robot {
 
     private final static String TAG = "auto code for first scrimmage";
     private final static int RING_TIMER = 5000;
