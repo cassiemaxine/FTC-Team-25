@@ -141,8 +141,8 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
 
         this.addTask(drivetask);
 
-        //gamepad 1
-        this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
+        //gamepad 2 used for mechanism control
+        this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
             //@Override
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
