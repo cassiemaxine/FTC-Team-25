@@ -22,13 +22,14 @@ import team25core.StandardFourMotorRobot;
 import team25core.RingImageInfo;
 
 
-@Autonomous(name = "Scrimmage4Cassie", group = "Team 25")
+@Autonomous(name = "Scrimmage4Shooting", group = "Team 25")
 // @Disabled
-public class UltimateGoalAutoCassie extends Robot {
+public class UltimateGoalAutoScrim4 extends Robot {
 
     private final static String TAG = "auto code for first scrimmage";
     private final static int RING_TIMER = 5000;
     private final static int SHOOTER_TIMER = 1000;
+    private final static int WARM_UP_TIMER = 4000;
     private final double STRAIGHT_SPEED = 0.5;
     private final double TURN_SPEED = 0.25;
     private int launchCounter = 0;
@@ -81,6 +82,7 @@ public class UltimateGoalAutoCassie extends Robot {
     RingImageInfo ringImageInfo;
     SingleShotTimerTask rtTask;
     SingleShotTimerTask stTask;
+    SingleShotTimerTask wuTask;
 
 
     @Override
@@ -247,6 +249,24 @@ public class UltimateGoalAutoCassie extends Robot {
         };
     }
 
+    public void startWarmUpTimer() {
+        wuTask = new SingleShotTimerTask(this, WARM_UP_TIMER) {
+            //the handleEvent method is called when timer expires
+            @Override
+            public void handleEvent(RobotEvent e) {
+                SingleShotTimerTask.SingleShotTimerEvent event = (SingleShotTimerEvent) e;
+
+                if (event.kind == EventKind.EXPIRED) {
+                    currentLocationTlm.setValue("in warmUp Timer Task handleEvent ");
+                }
+
+                autoRingShooting();
+                //removeTask(wuTask);
+
+            }
+        };
+    }
+
     public void openRingDispenser() {
         ringDispenser.setPosition(OPEN_DISPENSE_RING);
         ringDispenserOpen = true;
@@ -263,8 +283,10 @@ public class UltimateGoalAutoCassie extends Robot {
 
         //while (launchCounter < 3) {
 
-        launchMechLeft.setPower(0.5);
-        launchMechRight.setPower(-0.15);
+        launchMechLeft.setPower(0.58);
+        launchMechRight.setPower(-0.23);
+
+        //addTask(wuTask);
 
         //open ring shooter
         closeRingDispenser();
@@ -419,11 +441,17 @@ public class UltimateGoalAutoCassie extends Robot {
         setRingDetection();
         startRingTimer();
         startShooterTimer();
+        startWarmUpTimer();
 
         openRingDispenser();
 
+        launchMechLeft.setPower(0.58);
+        launchMechRight.setPower(-0.23);
+
         //initializing autonomous path
         initPath();
+
+
     }
 
     @Override
@@ -434,31 +462,6 @@ public class UltimateGoalAutoCassie extends Robot {
         currentLocationTlm.setValue("in start");
 
         autoRingShooting();
-        //starting ring detection task
-        //addTask(rdTask);
-
-//        for (launchCounter = 1; launchCounter < 10; launchCounter++) {
-//            setRingDispenser(RETURN_RING_DISPENSER);
-//            setRingDispenser(DISPENSE_RING);
-//
-//        }
-
-//        for (launchCounter = 1; launchCounter < 20; launchCounter++) {
-//            if (ringDispenserOpen) {
-//                ringDispenser.setPosition(DISPENSE_RING);
-//                ringDispenserOpen = false;
-//            } else {
-//                ringDispenser.setPosition(RETURN_RING_DISPENSER);
-//                ringDispenserOpen = true;
-//            }
-//        }
-
-        //launchMechLeft.setPower(0);
-        //launchMechRight.setPower(0);
-
-        //starting ring timer task
-        //addTask(rtTask);
-
-        //parkOnLaunchLine();
+        
     }
 }
