@@ -45,6 +45,7 @@ import team25core.RobotEvent;
 import team25core.SingleGamepadControlScheme;
 import team25core.SingleShotTimerTask;
 import team25core.StandardFourMotorRobot;
+import team25core.TankMechanumControlSchemeReverse;
 import team25core.TeleopDriveTask;
 
 //TO DO: TEST LAUNCHING & RING ELEVATOR 
@@ -133,7 +134,8 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
     @Override
     public void start() {
 
-        SingleGamepadControlScheme scheme = new SingleGamepadControlScheme(gamepad1);
+        //SingleGamepadControlScheme scheme = new SingleGamepadControlScheme(gamepad1);
+        TankMechanumControlSchemeReverse scheme = new TankMechanumControlSchemeReverse(gamepad1);
 
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
 
