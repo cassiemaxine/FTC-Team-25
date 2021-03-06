@@ -22,12 +22,12 @@ import team25core.StandardFourMotorRobot;
 import team25core.RingImageInfo;
 
 
-@Autonomous(name = "Scrimmage4Shooting", group = "Team 25")
+@Autonomous(name = "Scrimmage5Shooting", group = "Team 25")
 // @Disabled
-public class UltimateGoalAutoScrim4 extends Robot {
+public class UltimateGoalAutoScrim5 extends Robot {
 
     private final static String TAG = "auto code for first scrimmage";
-    private final static int RING_TIMER = 5000;
+    private final static int RING_TIMER = 20000;
     private final static int SHOOTER_TIMER = 1000;
     private final static int WARM_UP_TIMER = 4000;
     private final double STRAIGHT_SPEED = 0.5;
@@ -211,7 +211,7 @@ public class UltimateGoalAutoScrim4 extends Robot {
                     //stops ringDetectionTask
                     rdTask.stop();
                     currentLocationTlm.setValue("in SingleShotTimerTask handleEvent no ring");
-                    goToTargetZone(targetZoneAPath, "zone A" );
+                    //goToTargetZone(targetZoneAPath, "zone A" );
                 }
 
             }
@@ -226,7 +226,7 @@ public class UltimateGoalAutoScrim4 extends Robot {
                 SingleShotTimerTask.SingleShotTimerEvent event = (SingleShotTimerEvent) e;
 
                 if (event.kind == EventKind.EXPIRED) {
-                    currentLocationTlm.setValue("in startShooterTimerTask handleEvent ");
+                    currentLocationTlm.setValue("in startShooterTimerTask handleEvent shooter timer");
                     if (ringDispenserOpen) {
                         closeRingDispenser();
                     } else {
@@ -237,7 +237,7 @@ public class UltimateGoalAutoScrim4 extends Robot {
                         openRingDispenser();
                         launchMechLeft.setPower(0);
                         launchMechRight.setPower(0);
-                        parkOnLaunchLine();
+                        //parkOnLaunchLine();
 
                     } else {
                         addTask(stTask);
@@ -291,6 +291,7 @@ public class UltimateGoalAutoScrim4 extends Robot {
         //open ring shooter
         closeRingDispenser();
         addTask(stTask);
+
 
         //parkOnLaunchLine();
 
@@ -369,13 +370,14 @@ public class UltimateGoalAutoScrim4 extends Robot {
                         objectSeenTlm.setValue("quad rings");
                         currentLocationTlm.setValue("in RingDetectionTask handleEvent quad ring");
                         //    goToTargetZone(targetZoneCPath, "zone C" );
-                    } else {
-                        objectSeenTlm.setValue("no rings");
                     }
                     //stops ring detection task
                     //  rdTask.stop();
                     //stops timer
                     //  rtTask.stop();
+                }
+                else {
+                    objectSeenTlm.setValue("no rings");
                 }
             }
         };
@@ -439,7 +441,7 @@ public class UltimateGoalAutoScrim4 extends Robot {
 
         //starting ring detection
         setRingDetection();
-        startRingTimer();
+       // startRingTimer();
         startShooterTimer();
         startWarmUpTimer();
 
@@ -462,6 +464,7 @@ public class UltimateGoalAutoScrim4 extends Robot {
         currentLocationTlm.setValue("in start");
 
         autoRingShooting();
-        
+        addTask(rdTask);
+        //addTask(rtTask);
     }
 }
