@@ -36,6 +36,7 @@ package opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -117,6 +118,9 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
         wobbleLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         ringLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
        /* launch = new OneWheelDirectDrivetrain(launchMech);
         launch.resetEncoders();
         launch.encodersOn();
@@ -142,7 +146,7 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
         this.addTask(drivetask);
 
         //gamepad 2 used for mechanism control
-        this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
+        this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
             //@Override
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
@@ -161,8 +165,8 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
                         break;
                     case BUTTON_Y_DOWN:
                         //activate launching mech
-                        launchMechLeft.setPower(0.5);
-                        launchMechRight.setPower(-0.15);
+                        launchMechLeft.setPower(0.50);
+                        launchMechRight.setPower(-0.20);
                         break;
                     case BUTTON_Y_UP:
                         launchMechLeft.setPower(0);

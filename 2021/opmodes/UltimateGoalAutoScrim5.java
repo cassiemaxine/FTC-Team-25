@@ -207,7 +207,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
 
                 if (event.kind == EventKind.EXPIRED) {
                     objectSeenTlm.setValue("no rings");
-                    //if timer expires then no rings detected
+                    //if timer expires then no rings detect
                     //stops ringDetectionTask
                     rdTask.stop();
                     currentLocationTlm.setValue("in SingleShotTimerTask handleEvent no ring");
@@ -237,6 +237,11 @@ public class UltimateGoalAutoScrim5 extends Robot {
                         openRingDispenser();
                         launchMechLeft.setPower(0);
                         launchMechRight.setPower(0);
+
+                        frontLeft.setPower(1);
+                        frontRight.setPower(-1);
+                        backLeft.setPower(1);
+                        backRight.setPower(-1);
                         //parkOnLaunchLine();
 
                     } else {
@@ -283,8 +288,8 @@ public class UltimateGoalAutoScrim5 extends Robot {
 
         //while (launchCounter < 3) {
 
-        launchMechLeft.setPower(0.58);
-        launchMechRight.setPower(-0.23);
+        launchMechLeft.setPower(0.52);
+        launchMechRight.setPower(-0.20);
 
         //addTask(wuTask);
 
@@ -293,7 +298,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
         addTask(stTask);
 
 
-        //parkOnLaunchLine();
+       // parkOnLaunchLine();
 
         //opened in init
         //close in start launchCounter = 1
@@ -330,7 +335,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
 
         detachPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, STRAIGHT_SPEED);
 
-        launchLinePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 70, -STRAIGHT_SPEED);
+        launchLinePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 70, STRAIGHT_SPEED);
 
         //targetZoneAPath.addSegment(DeadReckonPath.SegmentType.TURN, 30, TURN_SPEED);
         targetZoneAPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 75, -STRAIGHT_SPEED);
@@ -447,8 +452,8 @@ public class UltimateGoalAutoScrim5 extends Robot {
 
         openRingDispenser();
 
-        launchMechLeft.setPower(0.58);
-        launchMechRight.setPower(-0.23);
+        launchMechLeft.setPower(0.52);
+        launchMechRight.setPower(-0.20);
 
         //initializing autonomous path
         initPath();
@@ -464,7 +469,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
         currentLocationTlm.setValue("in start");
 
         autoRingShooting();
-        addTask(rdTask);
+       // addTask(rdTask);
         //addTask(rtTask);
     }
 }
