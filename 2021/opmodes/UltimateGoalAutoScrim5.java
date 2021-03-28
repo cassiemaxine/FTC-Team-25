@@ -13,6 +13,7 @@ import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
 import team25core.GamepadTask;
 import team25core.MechanumGearedDrivetrain;
+import team25core.MechanumGearedDrivetrainReverse;
 import team25core.OneWheelDirectDrivetrain;
 import team25core.RingDetectionTask;
 import team25core.Robot;
@@ -22,7 +23,7 @@ import team25core.StandardFourMotorRobot;
 import team25core.RingImageInfo;
 
 
-@Autonomous(name = "Scrimmage5Shooting", group = "Team 25")
+@Autonomous(name = "QT2", group = "Team 25")
 // @Disabled
 public class UltimateGoalAutoScrim5 extends Robot {
 
@@ -57,6 +58,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
     private DcMotor ringLift; //hd hex 20
     private Servo ringDispenser; //standard servo
     private boolean ringDispenserOpen = false;
+    private boolean ringDetected = false;
 
     private Telemetry.Item currentLocationTlm;
     private Telemetry.Item handleEventTlm;
@@ -93,25 +95,6 @@ public class UltimateGoalAutoScrim5 extends Robot {
         }
     }
 
-
-    public void parkOnLaunchLine()
-    {
-        RobotLog.i("drives straight onto the launch line");
-
-
-        //starts when you have stone and want to move
-        this.addTask(new DeadReckonTask(this, launchLinePath, drivetrain1){
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE)
-                {
-                    RobotLog.i("finished parking");
-
-                }
-            }
-        });
-    }
 
     private void lowerWobbleGoal()
     {
@@ -184,7 +167,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
 
     public void goToTargetZoneC()
     {
-        RobotLog.i("drives to target goal C with wobble goal");
+        currentLocationTlm.setValue("drives to target goal C with wobble goal");
 
         this.addTask(new DeadReckonTask(this, targetZoneCPath, drivetrain1){
             @Override
@@ -192,7 +175,25 @@ public class UltimateGoalAutoScrim5 extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE)
                 {
-                    RobotLog.i("reached target zone C");
+                    currentLocationTlm.setValue("reached target zone C");
+                }
+            }
+        });
+    }
+
+    public void parkOnLaunchLine()
+    {
+        currentLocationTlm.setValue("drives straight onto the launch line");
+
+        //starts when you have stone and want to move
+        this.addTask(new DeadReckonTask(this, launchLinePath, drivetrain1){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    currentLocationTlm.setValue("finished parking");
+
                 }
             }
         });
@@ -238,10 +239,10 @@ public class UltimateGoalAutoScrim5 extends Robot {
                         launchMechLeft.setPower(0);
                         launchMechRight.setPower(0);
 
-                        frontLeft.setPower(1);
-                        frontRight.setPower(-1);
-                        backLeft.setPower(1);
-                        backRight.setPower(-1);
+                        //frontLeft.setPower(1);
+                        //frontRight.setPower(-1);
+                        //backLeft.setPower(1);
+                        //backRight.setPower(-1);
                         //parkOnLaunchLine();
 
                     } else {
@@ -343,8 +344,8 @@ public class UltimateGoalAutoScrim5 extends Robot {
         targetZoneBPath.addSegment(DeadReckonPath.SegmentType.TURN,10, TURN_SPEED);
         targetZoneBPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 90,-STRAIGHT_SPEED);
 
-        targetZoneCPath.addSegment(DeadReckonPath.SegmentType.TURN,20, TURN_SPEED);
-        targetZoneCPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT,105, -STRAIGHT_SPEED);
+        targetZoneCPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT,125, -STRAIGHT_SPEED);
+        targetZoneCPath.addSegment(DeadReckonPath.SegmentType.TURN,50, -TURN_SPEED);
 
     }
 
@@ -374,10 +375,14 @@ public class UltimateGoalAutoScrim5 extends Robot {
                     } else if (ringType.equals("Quad")){
                         objectSeenTlm.setValue("quad rings");
                         currentLocationTlm.setValue("in RingDetectionTask handleEvent quad ring");
-                        //    goToTargetZone(targetZoneCPath, "zone C" );
+                        if(!ringDetected){
+                            goToTargetZoneC();
+                            ringDetected = true;
+                        }
+                        //goToTargetZone(targetZoneCPath, "zone C" );
                     }
                     //stops ring detection task
-                    //  rdTask.stop();
+                    //rdTask.stop();
                     //stops timer
                     //  rtTask.stop();
                 }
@@ -468,8 +473,8 @@ public class UltimateGoalAutoScrim5 extends Robot {
 
         currentLocationTlm.setValue("in start");
 
-        autoRingShooting();
-       // addTask(rdTask);
+        //autoRingShooting();
+        addTask(rdTask);
         //addTask(rtTask);
     }
 }
