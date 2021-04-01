@@ -1,9 +1,7 @@
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -13,19 +11,17 @@ import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
 import team25core.GamepadTask;
 import team25core.MechanumGearedDrivetrain;
-import team25core.MechanumGearedDrivetrainReverse;
 import team25core.OneWheelDirectDrivetrain;
 import team25core.RingDetectionTask;
+import team25core.RingImageInfo;
 import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
-import team25core.StandardFourMotorRobot;
-import team25core.RingImageInfo;
 
 
 @Autonomous(name = "QT2", group = "Team 25")
 // @Disabled
-public class UltimateGoalAutoScrim5 extends Robot {
+public class UltimateGoalAutoQT extends Robot {
 
     private final static String TAG = "auto code for first scrimmage";
     private final static int RING_TIMER = 20000;
@@ -33,6 +29,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
     private final static int WARM_UP_TIMER = 4000;
     private final double STRAIGHT_SPEED = 0.5;
     private final double TURN_SPEED = 0.25;
+    private final double PAUSE_SPEED = 0;
     private int launchCounter = 0;
     private MechanumGearedDrivetrain drivetrain1;
     private Telemetry.Item loggingTlm;
@@ -73,6 +70,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
     private DeadReckonPath targetZoneBPath;
     private DeadReckonPath targetZoneCPath;
     private DeadReckonPath detachPath;
+    private DeadReckonPath powerShotPath;
 
     DeadReckonPath path = new DeadReckonPath();
 
@@ -98,13 +96,14 @@ public class UltimateGoalAutoScrim5 extends Robot {
 
     private void lowerWobbleGoal()
     {
-        RobotLog.i("dropping wobble goal");
+        currentLocationTlm.setValue("dropping wobble goal");
         this.addTask(new DeadReckonTask(this, detachPath, single) {
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
-                    RobotLog.i("finish lowering wobble goal");
+                    currentLocationTlm.setValue("finish lowering wobble goal");
+                    dropWobbleGoal();
                 }
             }
         });
@@ -135,7 +134,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
 
     public void goToTargetZoneA()
     {
-        RobotLog.i("drives to target goal A with wobble goal");
+        currentLocationTlm.setValue("drives to target goal A with wobble goal");
 
         this.addTask(new DeadReckonTask(this, targetZoneAPath, drivetrain1){
             @Override
@@ -143,7 +142,8 @@ public class UltimateGoalAutoScrim5 extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE)
                 {
-                    RobotLog.i("reached target zone A");
+                    currentLocationTlm.setValue("reached target zone A");
+                    lowerWobbleGoal();
                 }
             }
         });
@@ -151,7 +151,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
 
     public void goToTargetZoneB()
     {
-        RobotLog.i("drives to target goal B with wobble goal");
+        currentLocationTlm.setValue("drives to target goal B with wobble goal");
 
         this.addTask(new DeadReckonTask(this, targetZoneBPath, drivetrain1){
             @Override
@@ -159,7 +159,8 @@ public class UltimateGoalAutoScrim5 extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE)
                 {
-                    RobotLog.i("reached target zone B");
+                    currentLocationTlm.setValue("reached target zone B");
+                    lowerWobbleGoal();
                 }
             }
         });
@@ -176,6 +177,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
                 if (path.kind == EventKind.PATH_DONE)
                 {
                     currentLocationTlm.setValue("reached target zone C");
+                    lowerWobbleGoal();
                 }
             }
         });
@@ -204,7 +206,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
             //the handleEvent method is called when timer expires
             @Override
             public void handleEvent(RobotEvent e) {
-                SingleShotTimerTask.SingleShotTimerEvent event = (SingleShotTimerEvent) e;
+                SingleShotTimerEvent event = (SingleShotTimerEvent) e;
 
                 if (event.kind == EventKind.EXPIRED) {
                     objectSeenTlm.setValue("no rings");
@@ -219,12 +221,28 @@ public class UltimateGoalAutoScrim5 extends Robot {
         };
     }
 
+    public void startPowerShotShooting()
+    {
+        currentLocationTlm.setValue("shooting power shots");
+
+        this.addTask(new DeadReckonTask(this, powerShotPath, drivetrain1){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    currentLocationTlm.setValue("power shots done");
+                }
+            }
+        });
+    }
+
     public void startShooterTimer() {
         stTask = new SingleShotTimerTask(this, SHOOTER_TIMER) {
             //the handleEvent method is called when timer expires
             @Override
             public void handleEvent(RobotEvent e) {
-                SingleShotTimerTask.SingleShotTimerEvent event = (SingleShotTimerEvent) e;
+                SingleShotTimerEvent event = (SingleShotTimerEvent) e;
 
                 if (event.kind == EventKind.EXPIRED) {
                     currentLocationTlm.setValue("in startShooterTimerTask handleEvent shooter timer");
@@ -260,7 +278,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
             //the handleEvent method is called when timer expires
             @Override
             public void handleEvent(RobotEvent e) {
-                SingleShotTimerTask.SingleShotTimerEvent event = (SingleShotTimerEvent) e;
+                SingleShotTimerEvent event = (SingleShotTimerEvent) e;
 
                 if (event.kind == EventKind.EXPIRED) {
                     currentLocationTlm.setValue("in warmUp Timer Task handleEvent ");
@@ -295,11 +313,12 @@ public class UltimateGoalAutoScrim5 extends Robot {
         //addTask(wuTask);
 
         //open ring shooter
+        startPowerShotShooting();
         closeRingDispenser();
         addTask(stTask);
 
 
-        // parkOnLaunchLine();
+       // parkOnLaunchLine();
 
         //opened in init
         //close in start launchCounter = 1
@@ -325,6 +344,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
         targetZoneBPath = new DeadReckonPath();
         targetZoneCPath = new DeadReckonPath();
         detachPath       = new DeadReckonPath();
+        powerShotPath = new DeadReckonPath();
         //launchRings = new DeadReckonPath();
 
         launchLinePath.stop();
@@ -332,20 +352,30 @@ public class UltimateGoalAutoScrim5 extends Robot {
         targetZoneBPath.stop();
         targetZoneCPath.stop();
         detachPath.stop();
+        powerShotPath.stop();
         //launchRings.stop();
 
         detachPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, STRAIGHT_SPEED);
 
         launchLinePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 70, STRAIGHT_SPEED);
 
-        //targetZoneAPath.addSegment(DeadReckonPath.SegmentType.TURN, 30, TURN_SPEED);
         targetZoneAPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 75, -STRAIGHT_SPEED);
+        targetZoneAPath.addSegment(DeadReckonPath.SegmentType.TURN, 50, -TURN_SPEED);
 
-        targetZoneBPath.addSegment(DeadReckonPath.SegmentType.TURN,10, TURN_SPEED);
+        //targetZoneBPath.addSegment(DeadReckonPath.SegmentType.TURN,10, TURN_SPEED);
         targetZoneBPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 90,-STRAIGHT_SPEED);
 
         targetZoneCPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT,125, -STRAIGHT_SPEED);
         targetZoneCPath.addSegment(DeadReckonPath.SegmentType.TURN,50, -TURN_SPEED);
+
+        powerShotPath.addSegment(DeadReckonPath.SegmentType.TURN, 10, -TURN_SPEED);
+        powerShotPath.addSegment(DeadReckonPath.SegmentType.PAUSE, 10, PAUSE_SPEED);
+        powerShotPath.addSegment(DeadReckonPath.SegmentType.TURN, 10, -TURN_SPEED);
+        powerShotPath.addSegment(DeadReckonPath.SegmentType.PAUSE, 10, PAUSE_SPEED);
+        powerShotPath.addSegment(DeadReckonPath.SegmentType.TURN, 10, -TURN_SPEED);
+        powerShotPath.addSegment(DeadReckonPath.SegmentType.PAUSE, 10, PAUSE_SPEED);
+        powerShotPath.addSegment(DeadReckonPath.SegmentType.TURN, 30, TURN_SPEED);
+
 
     }
 
@@ -356,7 +386,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
             //the handleEvent method is called when a ring is detected
             @Override
             public void handleEvent(RobotEvent e) {
-                RingDetectionTask.RingDetectionEvent event = (RingDetectionEvent) e;
+                RingDetectionEvent event = (RingDetectionEvent) e;
                 ringImageInfo.getImageInfo(event);
                 ringConfidence = ringImageInfo.getConfidence();
                 ringType = ringImageInfo.getRingType();
@@ -371,7 +401,10 @@ public class UltimateGoalAutoScrim5 extends Robot {
                     if (ringType.equals("Single") ){
                         objectSeenTlm.setValue("single ring");
                         currentLocationTlm.setValue("in RingDetectionTask handleEvent single ring");
-                        //    goToTargetZone(targetZoneBPath, "zone B" );
+                        if(!ringDetected){
+                            goToTargetZoneB();
+                            ringDetected = true;
+                        }
                     } else if (ringType.equals("Quad")){
                         objectSeenTlm.setValue("quad rings");
                         currentLocationTlm.setValue("in RingDetectionTask handleEvent quad ring");
@@ -388,6 +421,11 @@ public class UltimateGoalAutoScrim5 extends Robot {
                 }
                 else {
                     objectSeenTlm.setValue("no rings");
+                    currentLocationTlm.setValue("in RingDetectionTask handleEvent no ring");
+                    if(!ringDetected){
+                        goToTargetZoneA();
+                        ringDetected = true;
+                    }
                 }
             }
         };
@@ -451,7 +489,7 @@ public class UltimateGoalAutoScrim5 extends Robot {
 
         //starting ring detection
         setRingDetection();
-        // startRingTimer();
+       // startRingTimer();
         startShooterTimer();
         startWarmUpTimer();
 
