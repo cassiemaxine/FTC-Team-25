@@ -19,7 +19,7 @@ import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
 
-@Autonomous(name = "QT2", group = "Team 25")
+@Autonomous(name = "QT4", group = "Team 25")
 // @Disabled
 public class UltimateGoalAutoQT extends Robot {
 
@@ -52,7 +52,7 @@ public class UltimateGoalAutoQT extends Robot {
     private final double CLOSE_DISPENSE_RING = (float) 245.0 / 256.0;
     private final double OPEN_DISPENSE_RING = (float) 140.0 / 256.0;
 
-    private DcMotor ringLift; //hd hex 20
+    //private DcMotor ringLift; //hd hex 20
     private Servo ringDispenser; //standard servo
     private boolean ringDispenserOpen = false;
     private boolean ringDetected = false;
@@ -131,9 +131,24 @@ public class UltimateGoalAutoQT extends Robot {
             }
         });
     }
+    public void startPowerShotPath()
+    {
+        currentLocationTlm.setValue("starting power shot path");
 
+        this.addTask(new DeadReckonTask(this, powerShotPath, drivetrain1){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    currentLocationTlm.setValue("completed power shot path");
+                }
+            }
+        });
+    }
     public void goToTargetZoneA()
     {
+
         currentLocationTlm.setValue("drives to target goal A with wobble goal");
 
         this.addTask(new DeadReckonTask(this, targetZoneAPath, drivetrain1){
@@ -168,6 +183,7 @@ public class UltimateGoalAutoQT extends Robot {
 
     public void goToTargetZoneC()
     {
+        startPowerShotPath();
         currentLocationTlm.setValue("drives to target goal C with wobble goal");
 
         this.addTask(new DeadReckonTask(this, targetZoneCPath, drivetrain1){
@@ -313,7 +329,6 @@ public class UltimateGoalAutoQT extends Robot {
         //addTask(wuTask);
 
         //open ring shooter
-        startPowerShotShooting();
         closeRingDispenser();
         addTask(stTask);
 
@@ -365,6 +380,8 @@ public class UltimateGoalAutoQT extends Robot {
         //targetZoneBPath.addSegment(DeadReckonPath.SegmentType.TURN,10, TURN_SPEED);
         targetZoneBPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 90,-STRAIGHT_SPEED);
 
+        //has been tested and works
+        //this goes straight for about 125 revolutions and turns clockwise 50 revolutions to target zone C
         targetZoneCPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT,125, -STRAIGHT_SPEED);
         targetZoneCPath.addSegment(DeadReckonPath.SegmentType.TURN,50, -TURN_SPEED);
 
@@ -374,7 +391,7 @@ public class UltimateGoalAutoQT extends Robot {
         powerShotPath.addSegment(DeadReckonPath.SegmentType.PAUSE, 10, PAUSE_SPEED);
         powerShotPath.addSegment(DeadReckonPath.SegmentType.TURN, 10, -TURN_SPEED);
         powerShotPath.addSegment(DeadReckonPath.SegmentType.PAUSE, 10, PAUSE_SPEED);
-        powerShotPath.addSegment(DeadReckonPath.SegmentType.TURN, 30, TURN_SPEED);
+        powerShotPath.addSegment(DeadReckonPath.SegmentType.TURN, 30, TURN_SPEED); //make note of orientation
 
 
     }
@@ -459,7 +476,7 @@ public class UltimateGoalAutoQT extends Robot {
         launchMechRight = hardwareMap.get(DcMotor.class, "launchMechRight");
         //mapping ring launch motor and servo
         ringDispenser = hardwareMap.servo.get("ringDispenser");
-        ringLift = hardwareMap.get(DcMotor.class, "ringLift");
+        //ringLift = hardwareMap.get(DcMotor.class, "ringLift");
 
 
         single     = new OneWheelDirectDrivetrain(wobbleLift);

@@ -66,7 +66,7 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
     private Servo wobbleGrab;
     private boolean wobbleGrabIsOpen = true;
 
-    private DcMotor ringLift; //hd hex 40
+    //private DcMotor ringLift; //hd hex 40
     private Servo ringDispenser; //continuous servo
     private boolean ringDispenserOpen = false;
 
@@ -105,7 +105,7 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
         wobbleLift = hardwareMap.get(DcMotor.class, "wobbleLift");
 
         //mapping the ring elevator motor
-        ringLift = hardwareMap.get(DcMotor.class, "ringLift");
+        //ringLift = hardwareMap.get(DcMotor.class, "ringLift");
         ringDispenser = hardwareMap.servo.get("ringDispenser");
 
         // using encoders to record ticks
@@ -116,7 +116,7 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
         launchMechLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launchMechRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         wobbleLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        ringLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //ringLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -173,16 +173,16 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
                         launchMechRight.setPower(0);
                         break;
                     case LEFT_TRIGGER_DOWN:
-                        //lift ring elevator UP
-                        ringLift.setPower(0.1);
+//                        //lift ring elevator UP
+//                        ringLift.setPower(0.1);
                         break;
                     case RIGHT_TRIGGER_DOWN:
-                        //ring elevator DOWN
-                        ringLift.setPower(-0.1); //might have to switch 171 and 175 during testing
+//                        //ring elevator DOWN
+//                        ringLift.setPower(-0.1); //might have to switch 171 and 175 during testing
                         break;
                     case LEFT_TRIGGER_UP:
                     case RIGHT_TRIGGER_UP:
-                        ringLift.setPower(0);
+//                        ringLift.setPower(0);
                         break;
                     //wobble goal system
                     case BUTTON_B_DOWN:
