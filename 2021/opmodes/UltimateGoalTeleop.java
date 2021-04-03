@@ -175,14 +175,15 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
                     case LEFT_TRIGGER_DOWN:
 //                        //lift ring elevator UP
 //                        ringLift.setPower(0.1);
+                          //wobbleLift.setPower(-0.5);
                         break;
                     case RIGHT_TRIGGER_DOWN:
 //                        //ring elevator DOWN
-//                        ringLift.setPower(-0.1); //might have to switch 171 and 175 during testing
+                         // wobbleLift.setPower(0.5);
                         break;
                     case LEFT_TRIGGER_UP:
                     case RIGHT_TRIGGER_UP:
-//                        ringLift.setPower(0);
+                        // wobbleLift.setPower(0.5);
                         break;
                     //wobble goal system
                     case BUTTON_B_DOWN:

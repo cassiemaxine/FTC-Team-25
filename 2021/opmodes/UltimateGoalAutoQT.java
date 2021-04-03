@@ -29,7 +29,7 @@ public class UltimateGoalAutoQT extends Robot {
     private final static int WARM_UP_TIMER = 4000;
     private final double STRAIGHT_SPEED = 0.5;
     private final double TURN_SPEED = 0.25;
-    private final double PAUSE_SPEED = 0;
+    private final double PAUSE_SPEED = 0.01;
     private int launchCounter = 0;
     private MechanumGearedDrivetrain drivetrain1;
     private Telemetry.Item loggingTlm;
@@ -69,6 +69,7 @@ public class UltimateGoalAutoQT extends Robot {
     private DeadReckonPath targetZoneAPath;
     private DeadReckonPath targetZoneBPath;
     private DeadReckonPath targetZoneCPath;
+    private DeadReckonPath targetZoneCPathPart2;
     private DeadReckonPath detachPath;
     private DeadReckonPath powerShotPath;
 
@@ -103,7 +104,7 @@ public class UltimateGoalAutoQT extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     currentLocationTlm.setValue("finish lowering wobble goal");
-                    dropWobbleGoal();
+                    //dropWobbleGoal();
                 }
             }
         });
@@ -158,7 +159,7 @@ public class UltimateGoalAutoQT extends Robot {
                 if (path.kind == EventKind.PATH_DONE)
                 {
                     currentLocationTlm.setValue("reached target zone A");
-                    lowerWobbleGoal();
+                    dropWobbleGoal();
                 }
             }
         });
@@ -175,7 +176,7 @@ public class UltimateGoalAutoQT extends Robot {
                 if (path.kind == EventKind.PATH_DONE)
                 {
                     currentLocationTlm.setValue("reached target zone B");
-                    lowerWobbleGoal();
+                    dropWobbleGoal();
                 }
             }
         });
@@ -183,7 +184,7 @@ public class UltimateGoalAutoQT extends Robot {
 
     public void goToTargetZoneC()
     {
-        startPowerShotPath();
+       // startPowerShotPath();
         currentLocationTlm.setValue("drives to target goal C with wobble goal");
 
         this.addTask(new DeadReckonTask(this, targetZoneCPath, drivetrain1){
@@ -193,7 +194,27 @@ public class UltimateGoalAutoQT extends Robot {
                 if (path.kind == EventKind.PATH_DONE)
                 {
                     currentLocationTlm.setValue("reached target zone C");
-                    lowerWobbleGoal();
+                    dropWobbleGoal();
+                    goToTargetZoneCPart2();
+
+                }
+            }
+        });
+    }
+
+    public void goToTargetZoneCPart2()
+    {
+        // startPowerShotPath();
+        currentLocationTlm.setValue("going to park");
+
+        this.addTask(new DeadReckonTask(this, targetZoneCPathPart2, drivetrain1){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    currentLocationTlm.setValue("parked");
+
                 }
             }
         });
@@ -358,6 +379,7 @@ public class UltimateGoalAutoQT extends Robot {
         targetZoneAPath = new DeadReckonPath();
         targetZoneBPath = new DeadReckonPath();
         targetZoneCPath = new DeadReckonPath();
+        targetZoneCPathPart2 = new DeadReckonPath();
         detachPath       = new DeadReckonPath();
         powerShotPath = new DeadReckonPath();
         //launchRings = new DeadReckonPath();
@@ -366,11 +388,12 @@ public class UltimateGoalAutoQT extends Robot {
         targetZoneAPath.stop();
         targetZoneBPath.stop();
         targetZoneCPath.stop();
+        targetZoneCPathPart2.stop();
         detachPath.stop();
         powerShotPath.stop();
         //launchRings.stop();
 
-        detachPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, STRAIGHT_SPEED);
+        detachPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -STRAIGHT_SPEED);
 
         launchLinePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 70, STRAIGHT_SPEED);
 
@@ -383,7 +406,12 @@ public class UltimateGoalAutoQT extends Robot {
         //has been tested and works
         //this goes straight for about 125 revolutions and turns clockwise 50 revolutions to target zone C
         targetZoneCPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT,125, -STRAIGHT_SPEED);
-        targetZoneCPath.addSegment(DeadReckonPath.SegmentType.TURN,50, -TURN_SPEED);
+        targetZoneCPath.addSegment(DeadReckonPath.SegmentType.TURN,70, -TURN_SPEED);
+
+        targetZoneCPathPart2.addSegment(DeadReckonPath.SegmentType.PAUSE,10000, PAUSE_SPEED);
+        targetZoneCPathPart2.addSegment(DeadReckonPath.SegmentType.STRAIGHT,20, -STRAIGHT_SPEED);
+        targetZoneCPathPart2.addSegment(DeadReckonPath.SegmentType.TURN,70, TURN_SPEED);
+        targetZoneCPathPart2.addSegment(DeadReckonPath.SegmentType.STRAIGHT,45, STRAIGHT_SPEED);
 
         powerShotPath.addSegment(DeadReckonPath.SegmentType.TURN, 10, -TURN_SPEED);
         powerShotPath.addSegment(DeadReckonPath.SegmentType.PAUSE, 10, PAUSE_SPEED);
