@@ -165,8 +165,8 @@ public class UltimateGoalTeleop extends StandardFourMotorRobot {
                         break;
                     case BUTTON_Y_DOWN:
                         //activate launching mech
-                        launchMechLeft.setPower(0.50);
-                        launchMechRight.setPower(-0.20);
+                        launchMechLeft.setPower(-1);
+                        launchMechRight.setPower(1);
                         break;
                     case BUTTON_Y_UP:
                         launchMechLeft.setPower(0);

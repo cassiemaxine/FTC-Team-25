@@ -24,7 +24,7 @@ import team25core.SingleShotTimerTask;
 public class UltimateGoalAutoQT extends Robot {
 
     private final static String TAG = "auto code for first scrimmage";
-    private final static int RING_TIMER = 20000;
+    private final static int RING_TIMER = 5;
     private final static int SHOOTER_TIMER = 1000;
     private final static int WARM_UP_TIMER = 4000;
     private final double STRAIGHT_SPEED = 0.5;
@@ -49,8 +49,8 @@ public class UltimateGoalAutoQT extends Robot {
     private boolean wobbleGrabIsOpen = true;
     private final double OPEN_WOBBLE_SERVO = (float) 244.0 / 256.0;
     private final double CLOSE_WOBBLE_SERVO = (float) 140.0 / 256.0;
-    private final double CLOSE_DISPENSE_RING = (float) 245.0 / 256.0;
-    private final double OPEN_DISPENSE_RING = (float) 140.0 / 256.0;
+    private final double CLOSE_DISPENSE_RING = (float) 140.0 / 256.0;
+    private final double OPEN_DISPENSE_RING = (float)  245.0 / 256.0;
 
     //private DcMotor ringLift; //hd hex 20
     private Servo ringDispenser; //standard servo
@@ -67,7 +67,9 @@ public class UltimateGoalAutoQT extends Robot {
 
     private DeadReckonPath launchLinePath;
     private DeadReckonPath targetZoneAPath;
+    private DeadReckonPath targetZoneAPathPart2;
     private DeadReckonPath targetZoneBPath;
+    private DeadReckonPath targetZoneBPathPart2;
     private DeadReckonPath targetZoneCPath;
     private DeadReckonPath targetZoneCPathPart2;
     private DeadReckonPath detachPath;
@@ -160,6 +162,25 @@ public class UltimateGoalAutoQT extends Robot {
                 {
                     currentLocationTlm.setValue("reached target zone A");
                     dropWobbleGoal();
+                    goToTargetZoneAPart2();
+                }
+            }
+        });
+    }
+
+    public void goToTargetZoneAPart2()
+    {
+
+        currentLocationTlm.setValue("drives to target goal A with wobble goal");
+
+        this.addTask(new DeadReckonTask(this, targetZoneAPath, drivetrain1){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    currentLocationTlm.setValue("reached target zone A");
+
                 }
             }
         });
@@ -177,6 +198,25 @@ public class UltimateGoalAutoQT extends Robot {
                 {
                     currentLocationTlm.setValue("reached target zone B");
                     dropWobbleGoal();
+                    goToTargetZoneBPart2();
+                }
+            }
+        });
+    }
+
+    public void goToTargetZoneBPart2()
+    {
+        currentLocationTlm.setValue("drives to target goal B with wobble goal");
+
+        this.addTask(new DeadReckonTask(this, targetZoneBPathPart2, drivetrain1){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    currentLocationTlm.setValue("reached target zone B");
+
+
                 }
             }
         });
@@ -319,9 +359,10 @@ public class UltimateGoalAutoQT extends Robot {
 
                 if (event.kind == EventKind.EXPIRED) {
                     currentLocationTlm.setValue("in warmUp Timer Task handleEvent ");
+                    //autoRingShooting();
                 }
 
-                autoRingShooting();
+
                 //removeTask(wuTask);
 
             }
@@ -344,8 +385,8 @@ public class UltimateGoalAutoQT extends Robot {
 
         //while (launchCounter < 3) {
 
-        launchMechLeft.setPower(0.52);
-        launchMechRight.setPower(-0.20);
+        launchMechLeft.setPower(-1);
+        launchMechRight.setPower(1);
 
         //addTask(wuTask);
 
@@ -377,7 +418,9 @@ public class UltimateGoalAutoQT extends Robot {
     {
         launchLinePath = new DeadReckonPath();
         targetZoneAPath = new DeadReckonPath();
+        targetZoneAPathPart2 = new DeadReckonPath();
         targetZoneBPath = new DeadReckonPath();
+        targetZoneBPathPart2 = new DeadReckonPath();
         targetZoneCPath = new DeadReckonPath();
         targetZoneCPathPart2 = new DeadReckonPath();
         detachPath       = new DeadReckonPath();
@@ -386,7 +429,9 @@ public class UltimateGoalAutoQT extends Robot {
 
         launchLinePath.stop();
         targetZoneAPath.stop();
+        targetZoneAPathPart2.stop();
         targetZoneBPath.stop();
+        targetZoneBPathPart2.stop();
         targetZoneCPath.stop();
         targetZoneCPathPart2.stop();
         detachPath.stop();
@@ -397,11 +442,25 @@ public class UltimateGoalAutoQT extends Robot {
 
         launchLinePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 70, STRAIGHT_SPEED);
 
-        targetZoneAPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 75, -STRAIGHT_SPEED);
+        targetZoneAPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 90, -STRAIGHT_SPEED);
         targetZoneAPath.addSegment(DeadReckonPath.SegmentType.TURN, 50, -TURN_SPEED);
+
+        targetZoneAPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 90,-STRAIGHT_SPEED);
+        targetZoneAPath.addSegment(DeadReckonPath.SegmentType.TURN,70, -TURN_SPEED);
+
+        targetZoneAPathPart2.addSegment(DeadReckonPath.SegmentType.PAUSE,1000000000, PAUSE_SPEED);
+        targetZoneCPathPart2.addSegment(DeadReckonPath.SegmentType.STRAIGHT,20, -STRAIGHT_SPEED);
+        targetZoneCPathPart2.addSegment(DeadReckonPath.SegmentType.TURN,70, TURN_SPEED);
 
         //targetZoneBPath.addSegment(DeadReckonPath.SegmentType.TURN,10, TURN_SPEED);
         targetZoneBPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 90,-STRAIGHT_SPEED);
+        targetZoneBPath.addSegment(DeadReckonPath.SegmentType.TURN,15, -TURN_SPEED);
+
+        targetZoneBPathPart2.addSegment(DeadReckonPath.SegmentType.PAUSE,1000000000, PAUSE_SPEED);
+        targetZoneBPathPart2.addSegment(DeadReckonPath.SegmentType.TURN,15, TURN_SPEED);
+        targetZoneBPathPart2.addSegment(DeadReckonPath.SegmentType.STRAIGHT,10, STRAIGHT_SPEED);
+        //targetZoneBPathPart2.addSegment(DeadReckonPath.SegmentType.STRAIGHT,45, STRAIGHT_SPEED);
+
 
         //has been tested and works
         //this goes straight for about 125 revolutions and turns clockwise 50 revolutions to target zone C
@@ -458,13 +517,22 @@ public class UltimateGoalAutoQT extends Robot {
                             ringDetected = true;
                         }
                         //goToTargetZone(targetZoneCPath, "zone C" );
+                    } else if (ringType.equals("no rings")){
+                        objectSeenTlm.setValue("no rings");
+                        currentLocationTlm.setValue("in RingDetectionTask handleEvent quad ring");SASAAAAAAAAAAAAAAAAAAAAAASSASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSEWWWWW
+                        if(!ringDetected){
+                            goToTargetZoneA();
+                            ringDetected = true;
+                        }
+                        //goToTargetZone(targetZoneCPath, "zone C" );
                     }
                     //stops ring detection task
                     //rdTask.stop();
                     //stops timer
                     //  rtTask.stop();
                 }
-                else {
+
+                else if (event.kind != EventKind.OBJECTS_DETECTED){
                     objectSeenTlm.setValue("no rings");
                     currentLocationTlm.setValue("in RingDetectionTask handleEvent no ring");
                     if(!ringDetected){
@@ -540,8 +608,9 @@ public class UltimateGoalAutoQT extends Robot {
 
         openRingDispenser();
 
-        launchMechLeft.setPower(0.52);
-        launchMechRight.setPower(-0.20);
+//        launchMechLeft.setPower(-1);
+//        launchMechRight.setPower(1);
+//        launchMechRight.setPower(1);
 
         //initializing autonomous path
         initPath();
@@ -556,7 +625,10 @@ public class UltimateGoalAutoQT extends Robot {
 
         currentLocationTlm.setValue("in start");
 
-        //autoRingShooting();
+       // autoRingShooting();
+        //startWarmUpTimer();
+
+        startRingTimer();
         addTask(rdTask);
         //addTask(rtTask);
     }
